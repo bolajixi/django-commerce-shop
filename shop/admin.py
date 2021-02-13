@@ -1,5 +1,5 @@
 from django.contrib import admin
-from shop.models import Category, Products
+from shop.models import Category, Product
 
 # Register your models here.
 @admin.register(Category)
@@ -10,7 +10,7 @@ class CategoryAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
 
 
-@admin.register(Products)
+@admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     '''Admin View for Product'''
 

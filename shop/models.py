@@ -15,7 +15,7 @@ class Category(models.Model):
         return self.name
 
 
-class Products(models.Model):
+class Product(models.Model):
     """Model definition for Products."""
 
     category = models.ForeignKey(Category, related_name='products', on_delete=models.CASCADE)
@@ -30,8 +30,6 @@ class Products(models.Model):
     updated = models.DateTimeField(auto_now=True)
 
     class Meta:
-        verbose_name = 'Product'
-        verbose_name_plural = 'Products'
         ordering = ('name',)
         index_together = (('id', 'slug'),)
 

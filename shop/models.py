@@ -1,6 +1,8 @@
 from django.db import models
 
 # Create your models here.
+
+
 class Category(models.Model):
     """Model definition for Category."""
 
@@ -18,7 +20,8 @@ class Category(models.Model):
 class Product(models.Model):
     """Model definition for Products."""
 
-    category = models.ForeignKey(Category, related_name='products', on_delete=models.CASCADE)
+    category = models.ForeignKey(
+        Category, related_name='products', on_delete=models.CASCADE)
 
     name = models.CharField(max_length=200, db_index=True)
     slug = models.SlugField(max_length=200, db_index=True)

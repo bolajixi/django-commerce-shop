@@ -3,7 +3,7 @@ from django.conf import settings
 from shop.models import Product
 
 
-class Cart(objects):
+class Cart(object):
     def __init__(self, request):
         """
         Initialize the cart.

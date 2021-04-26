@@ -1,9 +1,10 @@
-from celery import task
+# from celery import task
+from kedabbshop.celery import app
 from django.core.mail import send_mail
 from .models import Order
 
 
-@task
+@app.task
 def order_created(order_id):
     """
        Task to send an e-mail notification when an order is
@@ -16,6 +17,7 @@ def order_created(order_id):
         f'Your order ID is {order.id}.'
     mail_sent = send_mail(subject,
                           message,
-                          'admin@kedabbshop.com',
+                          'no-reply@kedabbshop.com',
                           [order.email])
+    print('Sent email already....', 'test console')
     return mail_sent

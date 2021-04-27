@@ -17,25 +17,25 @@ def payment_process(request):
     order = get_object_or_404(Order, id=order_id)
     total_cost = order.get_total_cost()
 
-    if request.method == 'POST':
-        transaction = Transaction(
-            authorization_key=settings.PAYSTACK_SECRET_KEY)
-        # Charge a customer N100.
-        response = transaction.charge(
-            order.email, "KDBB_"+order_id, (total_cost*100))
-        response = transaction.verify("KDBB_"+order_id)
+    transaction = Transaction(
+        authorization_key=settings.PAYSTACK_SECRET_KEY)
+    # Charge a customer N100.
+    response = transaction.charge(
+        order.email, "KDBB_"+str(order_id), float(total_cost*100))
+    response = transaction.verify("KDBB_"+str(order_id))
 
-        # data = JsonResponse(response, safe=False)
+    # data = JsonResponse(response, safe=False)
 
-        if response[0] == 200:  # Transaction is a success
-            # mark the order as paid
-            order.paid = True
-            # store the unique transaction id
-            order.paystack_ref_id = "KDBB_"+order_id
-            order.save()
-            return redirect('payment:done')
-        else:
-            return redirect('payment:canceled')
+    if response[0] == 200:  # Transaction is a success
+        # mark the order as paid
+        order.paid = True
+        # store the unique transaction id
+        order.paystack_ref_id = "KDBB_"+str(order_id)
+        order.save()
+        print('hello')
+        return redirect('payment:done')
+    else:
+        return redirect('payment:canceled')
 
 
 def payment_done(request):

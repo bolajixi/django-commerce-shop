@@ -1,2 +1,59 @@
 {% extends "shop/base.html" %}
 {% block title %}Pay by credit card{% endblock %}
+
+{% block content %}
+    <h1>Pay by credit card</h1>
+    <form id="paymentForm">
+        <script src="https://js.paystack.co/v1/inline.js"></script>
+        <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email-address" value='{{order.email}}' disabled/>
+        </div>
+        <div class="form-group">
+            <label for="amount">Amount</label>
+            <input type="tel" id="amount" required value='{{total_cost}}' disabled />
+        </div>
+        <div class="form-group">
+            <label for="first-name">First Name</label>
+            <input type="text" id="first-name" value='{{order.first_name}}' disabled/>
+        </div>
+        <div class="form-group">
+            <label for="last-name">Last Name</label>
+            <input type="text" id="last-name" value='{{order.last_name}}' disabled/>
+        </div>
+        <div class="form-submit">
+            <button type="submit" onclick="payWithPaystack()"> Pay </button>
+        </div>
+    </form>
+    <script>
+        const paymentForm = document.getElementById('paymentForm');
+            paymentForm.addEventListener("submit", payWithPaystack, false);
+            function payWithPaystack(e) {
+            e.preventDefault();
+            let handler = PaystackPop.setup({
+                    key: '{{ pk_public }}', // Replace with your public key
+                    email: document.getElementById("email-address").value,
+                    amount: document.getElementById("amount").value * 100,
+                    ref: 'KDBB_' + Math.floor((Math.random() * 1000000000) + 1), // generates a pseudo-unique reference. Please replace with a reference you generated. Or remove the line entirely so our API will generate one for you
+                    // label: "Optional string that replaces customer email"
+                    metadata: {
+                        custom_fields: [
+                            {
+                                display_name: "Mobile Number",
+                                variable_name: "mobile_number",
+                                value: "+2348012345678"
+                            }
+                        ]
+                    },
+                    onClose: function () {
+                        alert('Exit Payment.');
+                    },
+                    callback: function (response) {
+                        let message = 'Payment complete! Reference: ' + response.reference;
+                        alert(message);
+                    }
+                });
+                handler.openIframe();
+            }
+    </script>
+{% endblock %}

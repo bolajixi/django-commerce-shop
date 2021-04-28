@@ -134,3 +134,4 @@ CART_SESSION_ID = 'cart'
 # Configure email to send to console
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 PAYSTACK_SECRET_KEY = os.getenv("PAYSTACK_AUTHORIZATION_KEY")
+PAYSTACK_TEST_PUB_KEY = os.getenv("PAYSTACK_TEST_PUB_KEY")

@@ -1,7 +1,7 @@
 from orders.models import Order
 from django.conf import settings
 from django.shortcuts import render
-# from django.http import JsonResponse
+from django.http import JsonResponse
 from pypaystack import Transaction
 import os
 from dotenv import load_dotenv
@@ -16,24 +16,27 @@ def payment_process(request):
     order_id = request.session.get('order_id')
     order = get_object_or_404(Order, id=order_id)
     total_cost = order.get_total_cost()
+    return render(request, 'payment/process.html', {'order': order, 'pk_public': settings.PAYSTACK_TEST_PUB_KEY, 'total_cost': total_cost})
 
-    transaction = Transaction(
-        authorization_key=settings.PAYSTACK_SECRET_KEY)
-    # Charge a customer N100.
-    response = transaction.charge(
-        order.email, "KDBB_"+str(order_id), float(total_cost*100))
-    response = transaction.verify("KDBB_"+str(order_id))
 
-    # data = JsonResponse(response, safe=False)
+def verify_payment(request, ref):
+    order_id = request.session.get('order_id')
+    order = get_object_or_404(Order, id=order_id)
+    total_cost = order.get_total_cost()
 
-    if response[0] == 200:  # Transaction is a success
-        # mark the order as paid
-        order.paid = True
-        # store the unique transaction id
-        order.paystack_ref_id = "KDBB_"+str(order_id)
-        order.save()
-        print('hello')
-        return redirect('payment:done')
+    transaction = Transaction(authorization_key=settings.PAYSTACK_SECRET_KEY)
+    response = transaction.verify(ref)
+
+    if response[0] == 200:  # Check status code is success
+
+        # (response[3]['amount']/100) -> Removes trailing kobo zeros
+        if (response[3]['amount']/100) == total_cost:
+            # mark the order as paid
+            order.paid = True
+            # store the unique transaction id
+            order.paystack_ref_id = ref
+            order.save()
+            return redirect('payment:done')
     else:
         return redirect('payment:canceled')
 

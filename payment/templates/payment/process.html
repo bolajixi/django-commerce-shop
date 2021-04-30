@@ -31,10 +31,10 @@
             function payWithPaystack(e) {
             e.preventDefault();
             let handler = PaystackPop.setup({
-                    key: '{{ pk_public }}', // Replace with your public key
+                    key: '{{ pk_public }}',
                     email: document.getElementById("email-address").value,
                     amount: document.getElementById("amount").value * 100,
-                    ref: 'KDBB_' + Math.floor((Math.random() * 1000000000) + 1), // generates a pseudo-unique reference. Please replace with a reference you generated. Or remove the line entirely so our API will generate one for you
+                    ref: 'KDBB_' + Math.floor((Math.random() * 1000000000) + 1), // Generate unique reference
                     // label: "Optional string that replaces customer email"
                     metadata: {
                         custom_fields: [
@@ -49,8 +49,16 @@
                         alert('Exit Payment.');
                     },
                     callback: function (response) {
-                        let message = 'Payment complete! Reference: ' + response.reference;
+                        var reference_id = response.reference
+
+                        let message = 'Payment complete! Reference: ' + reference_id;
                         alert(message);
+
+                        // Verify transaction
+                        const currUrl = new URL('{{ request.build_absolute_uri }}')
+                        currUrl.pathname = "/payment/verify/" + reference_id;
+                        console.log(currUrl);
+                        window.location.replace(currUrl.href)
                     }
                 });
                 handler.openIframe();

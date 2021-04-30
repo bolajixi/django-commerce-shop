@@ -36,6 +36,9 @@ def verify_payment(request, ref):
             # store the unique transaction id
             order.paystack_ref_id = ref
             order.save()
+            # Remove order_id from session
+            del request.session['order_id']
+
             return redirect('payment:done')
     else:
         return redirect('payment:canceled')

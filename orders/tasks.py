@@ -1,5 +1,5 @@
 from celery import task
-# from kedabbshop.celery import app
+# from myshop.celery import app
 from django.core.mail import send_mail
 from .models import Order
 
@@ -17,7 +17,7 @@ def order_created(order_id):
         f'Your order ID is {order.id}.'
     mail_sent = send_mail(subject,
                           message,
-                          'no-reply@kedabbshop.com',
+                          'no-reply@myshop.com',
                           [order.email])
     print('Sent email already....', 'test console')
     return mail_sent

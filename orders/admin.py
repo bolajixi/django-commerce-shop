@@ -17,7 +17,7 @@ class OrderItemInline(admin.TabularInline):
 
 def export_to_csv(modeladmin, request, queryset):
     opts = modeladmin.model._meta
-    content_disposition = 'attachment; filename = {opts.verbose_name}.csv'
+    content_disposition = f'attachment; filename={opts.verbose_name}.csv'
 
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = content_disposition
@@ -47,11 +47,19 @@ def order_detail(obj):
     return mark_safe(f'<a href="{url}">View</a>')
 
 
+def order_pdf(obj):
+    url = reverse('orders:admin_order_pdf', args=[obj.id])
+    return mark_safe(f'<a href="{url}">PDF</a>')
+
+
+order_pdf.short_description = 'Invoice'
+
+
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
     list_display = [order_detail, 'id', 'first_name', 'last_name', 'email',
                     'address', 'postal_code', 'city', 'paid',
-                    'created', 'updated']
+                    'created', 'updated', order_pdf]
     list_filter = ['paid', 'created', 'updated']
     inlines = [OrderItemInline]
     actions = [export_to_csv]
